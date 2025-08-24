@@ -1,0 +1,10 @@
+node_modules
+dist
+yarn.lock
+yarn-error.log
+logs
+coverage
+data
+*.config.js
+src/migrations
+out
