@@ -1,6 +1,6 @@
 import { type NextFunction, type Request, type Response } from 'express';
 import { type ObjectLiteral, type SelectQueryBuilder } from 'typeorm';
-import AdvancedResultsRepository from 'src/repositories/form-utilities/advancedTable.repository';
+import AdvancedResultsRepository from 'src/repositories/advancedTable.repository';
 
 export type ApplyAccessFilters = (queryBuilder: SelectQueryBuilder<any>) => Promise<SelectQueryBuilder<any>>;
 

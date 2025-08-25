@@ -15,6 +15,7 @@ import { runSeeds } from './run-seeds';
 
   if (!AppDataSource.isInitialized) {
     logger.error('Datasource didnt initialize');
+    // eslint-disable-next-line no-process-exit
     process.exit(1);
   }
 
@@ -42,9 +43,11 @@ import { runSeeds } from './run-seeds';
     server.close((err) => {
       if (err) {
         logger.error(err);
+        // eslint-disable-next-line no-process-exit
         process.exit(1);
       } else {
         logger.info('Server closed. Exiting process now.');
+        // eslint-disable-next-line no-process-exit
         process.exit(0);
       }
     });

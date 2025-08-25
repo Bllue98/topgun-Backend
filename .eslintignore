@@ -8,3 +8,4 @@ data
 *.config.js
 src/migrations
 out
+src/entities/_generated

@@ -8,6 +8,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.string().default('4000'),
   SERVER_URL: z.string().default('http://localhost:4000'),
+  ACCESS_TOKEN_SECRET: z.string().min(8),
+  ACCESS_TOKEN_EXPIRE: z.string().default('20m'),
+  REFRESH_TOKEN_SECRET: z.string().min(8),
+  REFRESH_TOKEN_EXPIRE: z.string().default('1d'),
+  REFRESH_TOKEN_COOKIE_NAME: z.string().default('jid'),
   DATABASE_HOST: z.string(),
   DATABASE_PORT: z.coerce.number().default(1433),
   DATABASE_DB: z.string(),
@@ -29,6 +34,17 @@ const config = {
   server: {
     port: env.PORT,
     url: env.SERVER_URL
+  },
+  jwt: {
+    access_token: {
+      secret: env.ACCESS_TOKEN_SECRET,
+      expire: env.ACCESS_TOKEN_EXPIRE
+    },
+    refresh_token: {
+      secret: env.REFRESH_TOKEN_SECRET,
+      expire: env.REFRESH_TOKEN_EXPIRE,
+      cookie_name: env.REFRESH_TOKEN_COOKIE_NAME
+    }
   },
   database: {
     host: env.DATABASE_HOST,
