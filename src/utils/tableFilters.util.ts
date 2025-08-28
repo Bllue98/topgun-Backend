@@ -1,7 +1,7 @@
 import { type ObjectLiteral, type SelectQueryBuilder } from 'typeorm';
 
 export const filtersByTableName: Record<string, string[]> = {
-  Users: ['id', 'name', 'email']
+  users: ['id', 'name', 'email']
 };
 
 export const searchTemplates = {

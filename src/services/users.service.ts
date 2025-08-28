@@ -11,6 +11,19 @@ class UsersService extends BaseService<User> {
     return (await this.repository.findOne({ where: { email } })) ?? {};
   }
 
+  override async retrieve(id: number, relations: string[] = [], select?: Array<keyof User>): Promise<User> {
+    const user = await this.repository.findOne({
+      where: { id },
+      relations,
+      ...(select ? { select } : {})
+    });
+
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+
+    return user;
+  }
   async getUsersByEmailOrName(identifier: string): Promise<Partial<User>> {
     return (
       (await this.repository.findOne({
@@ -32,10 +45,26 @@ class UsersService extends BaseService<User> {
     return await this.save(id, updatedData);
   }
 
-  /**
-   * Securely change password for an users by verifying current password and updating to a new hash.
-   * All hashing/verification happens here so controllers don't access repositories directly.
-   */
+  async getActiveUsers(id: number, skip: number, take: number) {
+    const where: any = { isActive: true };
+    if (id) {
+      where.id = id;
+    }
+
+    const [users, total] = await usersRepository.findAndCount({
+      where,
+      skip,
+      take,
+      order: { createdAt: 'DESC' }
+    });
+
+    return {
+      total,
+      pageSize: take,
+      data: users
+    };
+  }
+
   public async changePassword(id: number, currentPassword: string, newPassword: string): Promise<void> {
     const user = await this.repository.findOne({
       where: { id },
