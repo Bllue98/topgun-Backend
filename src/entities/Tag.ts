@@ -1,20 +1,19 @@
-import { Column, Entity, Index, ManyToMany } from "typeorm";
-import { Talent } from "./Talent";
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Talent } from './Talent';
 
-@Index("PK__Tag__3213E83F1740BAAA", ["id"], { unique: true })
-@Index("UQ__Tag__DC101C01ACD8BF5A", ["tag"], { unique: true })
-@Entity("Tag")
+@Index('idx_tags_talent', ['talentId'], {})
+@Index('PK__talent_t__C1013DA9A046118C', ['talentId', 'tag'], { unique: true })
+@Entity('talent_tags')
 export class Tag {
-  @Column("uniqueidentifier", {
-    primary: true,
-    name: "id",
-    default: () => "newid()",
-  })
-  id?: string;
+  @Column('int', { primary: true, name: 'talent_id' })
+  talentId?: number;
 
-  @Column("nvarchar", { name: "tag", unique: true, length: 100 })
+  @Column('varchar', { primary: true, name: 'tag', length: 255 })
   tag?: string;
 
-  @ManyToMany(() => Talent, (talent) => talent.tags)
-  talents?: Talent[];
+  @ManyToOne(() => Talent, (talent) => talent.talentTags, {
+    onDelete: 'CASCADE'
+  })
+  @JoinColumn([{ name: 'talent_id', referencedColumnName: 'id' }])
+  talent?: Talent;
 }

@@ -1,4 +1,4 @@
-import { Cost } from 'src/entities/Cost';
+import { Cost } from 'src/entities/test/Cost';
 import costsRepository from 'src/repositories/costs.repository';
 import { BaseService } from 'src/services/shared/base.service';
 

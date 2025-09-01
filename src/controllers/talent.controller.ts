@@ -3,7 +3,12 @@ import { Talent } from 'src/entities/Talent';
 import talentsService from 'src/services/talents.service';
 
 export class TalentsController extends BaseController<Talent> {
-  // Add
+  // Full graph endpoint
+
+  get getFull() {
+    const fullRelations = ['cost', 'effects', 'requirements', 'talentTags', 'rarity'];
+    return this.retrieve(fullRelations);
+  }
 }
 
-export const costController = new TalentsController(talentsService);
+export default new TalentsController(talentsService);

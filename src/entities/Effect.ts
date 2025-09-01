@@ -1,67 +1,55 @@
-import { Column, Entity, Index, JoinTable, ManyToMany } from "typeorm";
-import { Talent } from "./Talent";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Talent } from './Talent';
 
-@Index("PK__Effect__3213E83FB69D8641", ["id"], { unique: true })
-@Entity("Effect")
+@Index('idx_effects_talent', ['talentId'], {})
+@Index('PK__effects__3213E83F14B698BF', ['id'], { unique: true })
+@Entity('effects')
 export class Effect {
-  @Column("uniqueidentifier", {
-    primary: true,
-    name: "id",
-    default: () => "newid()",
-  })
-  id?: string;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  id?: number;
 
-  @Column("nvarchar", { name: "kind", length: 20 })
+  @Column('int', { name: 'talent_id' })
+  talentId?: number;
+
+  @Column('varchar', { name: 'kind', length: 20 })
   kind?: string;
 
-  @Column("nvarchar", { name: "durationType", length: 20 })
-  durationType?: string;
+  @Column('varchar', { name: 'target', length: 20 })
+  target?: string;
 
-  @Column("float", { name: "durationAmount", nullable: true, precision: 53 })
-  durationAmount?: number | null;
-
-  @Column("nvarchar", { name: "target_statmod", nullable: true, length: 20 })
-  targetStatmod?: string | null;
-
-  @Column("nvarchar", { name: "stat", nullable: true, length: 100 })
+  @Column('varchar', { name: 'stat', nullable: true, length: 255 })
   stat?: string | null;
 
-  @Column("nvarchar", { name: "op", nullable: true, length: 20 })
+  @Column('varchar', { name: 'op', nullable: true, length: 10 })
   op?: string | null;
 
-  @Column("float", { name: "value_num", nullable: true, precision: 53 })
-  valueNum?: number | null;
+  @Column('varchar', { name: 'value', nullable: true, length: 50 })
+  value?: string | null;
 
-  @Column("nvarchar", { name: "value_expr", nullable: true, length: 50 })
-  valueExpr?: string | null;
-
-  @Column("nvarchar", { name: "target_damage", nullable: true, length: 20 })
-  targetDamage?: string | null;
-
-  @Column("nvarchar", { name: "damageType", nullable: true, length: 100 })
+  @Column('varchar', { name: 'damage_type', nullable: true, length: 255 })
   damageType?: string | null;
 
-  @Column("float", { name: "amount_num", nullable: true, precision: 53 })
-  amountNum?: number | null;
+  @Column('varchar', { name: 'amount', nullable: true, length: 50 })
+  amount?: string | null;
 
-  @Column("nvarchar", { name: "amount_expr", nullable: true, length: 50 })
-  amountExpr?: string | null;
-
-  @Column("nvarchar", { name: "target_heal", nullable: true, length: 20 })
-  targetHeal?: string | null;
-
-  @Column("float", { name: "heal_num", nullable: true, precision: 53 })
-  healNum?: number | null;
-
-  @Column("nvarchar", { name: "heal_expr", nullable: true, length: 50 })
-  healExpr?: string | null;
-
-  @ManyToMany(() => Talent, (talent) => talent.effects)
-  @JoinTable({
-    name: "TalentEffect",
-    joinColumns: [{ name: "effectId", referencedColumnName: "id" }],
-    inverseJoinColumns: [{ name: "talentId", referencedColumnName: "id" }],
-    schema: "dbo",
+  @Column('varchar', {
+    name: 'duration_type',
+    length: 20,
+    default: () => "'instant'"
   })
-  talents?: Talent[];
+  durationType?: string;
+
+  @Column('decimal', {
+    name: 'duration_amount',
+    nullable: true,
+    precision: 10,
+    scale: 2
+  })
+  durationAmount?: number | null;
+
+  @ManyToOne(() => Talent, (talent) => talent.effects, {
+    onDelete: 'CASCADE'
+  })
+  @JoinColumn([{ name: 'talent_id', referencedColumnName: 'id' }])
+  talent?: Talent;
 }

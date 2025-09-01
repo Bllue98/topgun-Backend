@@ -1,90 +1,51 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-} from "typeorm";
-import { Rarity } from "./Rarity";
-import { Cost } from "./Cost";
-import { Effect } from "./Effect";
-import { Requirement } from "./Requirement";
-import { Tag } from "./Tag";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Cost } from './Cost';
+import { Effect } from './Effect';
+import { Requirement } from './Requirement';
+import { Tag } from './Tag';
+import { Rarity } from './Rarity';
 
-@Index("IX_Talent_Rarity", ["rarityId"], {})
-@Index("PK__Talent__3213E83F317D3EC3", ["id"], { unique: true })
-@Entity("Talent")
+@Index('idx_talent_name', ['name'], {})
+@Index('PK__talents__3213E83F1F279FEC', ['id'], { unique: true })
+@Entity('talents')
 export class Talent {
-  @Column("uniqueidentifier", {
-    primary: true,
-    name: "id",
-    default: () => "newid()",
-  })
-  id?: string;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  id?: number;
 
-  @Column("nvarchar", { name: "name", length: 200 })
+  @Column('varchar', { name: 'name', length: 255 })
   name?: string;
 
-  @Column("nvarchar", { name: "description", nullable: true })
+  @Column('nvarchar', { name: 'description', nullable: true })
   description?: string | null;
 
-  @Column("datetime2", { name: "createdAt", default: () => "sysutcdatetime()" })
-  createdAt?: Date;
-
-  @Column("datetime2", { name: "updatedAt", default: () => "sysutcdatetime()" })
-  updatedAt?: Date;
-
-  @Column("bit", { name: "isKeyTalent", default: () => "(0)" })
+  @Column('bit', { name: 'is_key_talent', default: () => '(0)' })
   isKeyTalent?: boolean;
 
-  @Column("nvarchar", { name: "category", nullable: true, length: 100 })
+  @Column('varchar', { name: 'category', nullable: true, length: 255 })
   category?: string | null;
 
-  @Column("int", { name: "cooldown", default: () => "(0)" })
+  @Column('int', { name: 'cooldown', default: () => '(0)' })
   cooldown?: number;
 
-  @Column("int", { name: "rank", default: () => "(1)" })
+  @Column('int', { name: 'rank', default: () => '(1)' })
   rank?: number;
 
-  @Column("int", { name: "maxRank", default: () => "(1)" })
+  @Column('int', { name: 'max_rank', default: () => '(1)' })
   maxRank?: number;
 
-  @Column("uniqueidentifier", { name: "rarityId", nullable: true })
-  rarityId?: string | null;
+  @OneToMany(() => Cost, (cost) => cost.talent)
+  cost?: Cost[];
 
-  @ManyToOne(() => Rarity, (rarity) => rarity.talents)
-  @JoinColumn([{ name: "rarityId", referencedColumnName: "id" }])
-  rarity?: Rarity;
-
-  @ManyToMany(() => Cost, (cost) => cost.talents)
-  @JoinTable({
-    name: "TalentCost",
-    joinColumns: [{ name: "talentId", referencedColumnName: "id" }],
-    inverseJoinColumns: [{ name: "costId", referencedColumnName: "id" }],
-    schema: "dbo",
-  })
-  costs?: Cost[];
-
-  @ManyToMany(() => Effect, (effect) => effect.talents)
+  @OneToMany(() => Effect, (effect) => effect.talent)
   effects?: Effect[];
 
-  @ManyToMany(() => Requirement, (requirement) => requirement.talents)
-  @JoinTable({
-    name: "TalentRequirement",
-    joinColumns: [{ name: "talentId", referencedColumnName: "id" }],
-    inverseJoinColumns: [{ name: "requirementId", referencedColumnName: "id" }],
-    schema: "dbo",
-  })
+  @OneToMany(() => Requirement, (requirement) => requirement.talent)
   requirements?: Requirement[];
 
-  @ManyToMany(() => Tag, (tag) => tag.talents)
-  @JoinTable({
-    name: "TalentTag",
-    joinColumns: [{ name: "talentId", referencedColumnName: "id" }],
-    inverseJoinColumns: [{ name: "tagId", referencedColumnName: "id" }],
-    schema: "dbo",
-  })
-  tags?: Tag[];
+  @OneToMany(() => Tag, (tag) => tag.talent)
+  talentTags?: Tag[];
+
+  @ManyToOne(() => Rarity, (rarity) => rarity.talents)
+  @JoinColumn([{ name: 'rarity_id', referencedColumnName: 'id' }])
+  rarity?: Rarity;
 }

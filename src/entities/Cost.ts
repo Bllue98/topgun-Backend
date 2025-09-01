@@ -1,28 +1,36 @@
-import { Column, Entity, Index, ManyToMany } from "typeorm";
-import { Talent } from "./Talent";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Talent } from './Talent';
 
-@Index("PK__Cost__3213E83F52FB61A2", ["id"], { unique: true })
-@Entity("Cost")
+@Index('idx_costs_talent', ['talentId'], {})
+@Index('PK__cost_com__3213E83FC559DE55', ['id'], { unique: true })
+@Entity('costs')
 export class Cost {
-  @Column("uniqueidentifier", {
-    primary: true,
-    name: "id",
-    default: () => "newid()",
-  })
-  id?: string;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  id?: number;
 
-  @Column("nvarchar", { name: "kind", length: 20 })
+  @Column('int', { name: 'talent_id' })
+  talentId?: number;
+
+  @Column('varchar', { name: 'kind', length: 20, default: () => "'resource'" })
   kind?: string;
 
-  @Column("nvarchar", { name: "resource", length: 20 })
+  @Column('varchar', { name: 'resource', length: 20, default: () => "'none'" })
   resource?: string;
 
-  @Column("float", { name: "amount", nullable: true, precision: 53 })
+  @Column('decimal', {
+    name: 'amount',
+    nullable: true,
+    precision: 10,
+    scale: 2
+  })
   amount?: number | null;
 
-  @Column("int", { name: "maxUses", nullable: true })
+  @Column('int', { name: 'max_uses', nullable: true })
   maxUses?: number | null;
 
-  @ManyToMany(() => Talent, (talent) => talent.costs)
-  talents?: Talent[];
+  @ManyToOne(() => Talent, (talent) => talent.cost, {
+    onDelete: 'CASCADE'
+  })
+  @JoinColumn([{ name: 'talent_id', referencedColumnName: 'id' }])
+  talent?: Talent;
 }

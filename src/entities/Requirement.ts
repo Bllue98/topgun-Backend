@@ -1,40 +1,48 @@
-import { Column, Entity, Index, ManyToMany } from "typeorm";
-import { Talent } from "./Talent";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Talent } from './Talent';
 
-@Index("PK__Requirem__3213E83F6AA8FAC0", ["id"], { unique: true })
-@Entity("Requirement")
+@Index('idx_requirements_talent', ['talentId'], {})
+@Index('PK__requirem__3213E83FFB17820F', ['id'], { unique: true })
+@Entity({ name: 'requirements', schema: 'myschema' })
 export class Requirement {
-  @Column("uniqueidentifier", {
-    primary: true,
-    name: "id",
-    default: () => "newid()",
-  })
-  id?: string;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  id?: number;
 
-  @Column("nvarchar", { name: "kind", length: 20 })
+  @Column('int', { name: 'talent_id' })
+  talentId?: number;
+
+  @Column('varchar', { name: 'kind', length: 20 })
   kind?: string;
 
-  @Column("int", { name: "minLevel", nullable: true })
-  minLevel?: number | null;
+  @Column('varchar', { name: 'ref_id', nullable: true, length: 255 })
+  refId?: string | null;
 
-  @Column("nvarchar", { name: "stat", nullable: true, length: 100 })
-  stat?: string | null;
-
-  @Column("float", { name: "minValue", nullable: true, precision: 53 })
+  @Column('decimal', {
+    name: 'min_value',
+    nullable: true,
+    precision: 10,
+    scale: 2
+  })
   minValue?: number | null;
 
-  @Column("nvarchar", { name: "talentRefId", nullable: true, length: 200 })
+  @Column('varchar', { name: 'stat', nullable: true, length: 255 })
+  stat?: string | null;
+
+  @Column('varchar', { name: 'talent_ref_id', nullable: true, length: 255 })
   talentRefId?: string | null;
 
-  @Column("nvarchar", { name: "tag", nullable: true, length: 100 })
+  @Column('varchar', { name: 'tag', nullable: true, length: 255 })
   tag?: string | null;
 
-  @Column("int", { name: "tagCount", nullable: true })
+  @Column('int', { name: 'tag_count', nullable: true })
   tagCount?: number | null;
 
-  @Column("nvarchar", { name: "classId", nullable: true, length: 200 })
+  @Column('varchar', { name: 'class_id', nullable: true, length: 255 })
   classId?: string | null;
 
-  @ManyToMany(() => Talent, (talent) => talent.requirements)
-  talents?: Talent[];
+  @ManyToOne(() => Talent, (talent) => talent.requirements, {
+    onDelete: 'CASCADE'
+  })
+  @JoinColumn([{ name: 'talent_id', referencedColumnName: 'id' }])
+  talent?: Talent;
 }

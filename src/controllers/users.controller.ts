@@ -6,37 +6,47 @@ import { PaginationQuery, TypedRequest } from 'src/types';
 import type { NextFunction, Response } from 'express';
 import ErrorResponse from 'src/middleware/error';
 import httpStatus from 'http-status';
+import { EntityNotFoundError } from 'typeorm';
 
 class UserController extends BaseController<User> {
   override service: typeof usersService;
+
   get getActiveUsers() {
     return asyncHandler(
-      async (
-        req: TypedRequest<Record<string, unknown>, PaginationQuery>,
-        res: Response,
-        next: NextFunction
-      ): Promise<Response | undefined> => {
-        const id = parseInt(<string>req.params['id']);
-
+      async (req: TypedRequest<Record<string, unknown>, PaginationQuery>, res: Response, next: NextFunction): Promise<void> => {
         const { page = 1, limit = 10 } = req.query;
-
         const skip = (page - 1) * limit;
 
+        try {
+          const users = await this.service.getActiveUsers(skip, limit);
+
+          res.status(httpStatus.OK).json({
+            success: true,
+            data: users
+          });
+        } catch (err) {
+          next(new ErrorResponse('Failed to fetch active users', httpStatus.INTERNAL_SERVER_ERROR));
+        }
+      }
+    );
+  }
+
+  get getOne() {
+    return asyncHandler(
+      async (req: TypedRequest<Record<string, unknown>>, res: Response, _: NextFunction): Promise<Response | undefined> => {
+        const id = parseInt(<string>req.params['id']);
+
         if (!id) {
-          next(new ErrorResponse('Invoice not found', httpStatus.NOT_FOUND));
-          return;
+          throw new EntityNotFoundError(this.service.repository.target, {
+            [this.service._pk]: id
+          });
         }
 
-        const soItems = await this.service.getActiveUsers(id, skip, limit);
+        const data = await this.service.retrieve(id);
 
-        if (!soItems) {
-          next(new ErrorResponse('Sales Orders not found', httpStatus.NOT_FOUND));
-          return;
-        }
-
-        res.status(httpStatus.OK).json({
+        return res.status(httpStatus.OK).json({
           success: true,
-          data: soItems
+          data
         });
       }
     );

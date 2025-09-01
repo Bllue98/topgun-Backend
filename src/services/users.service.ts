@@ -45,14 +45,9 @@ class UsersService extends BaseService<User> {
     return await this.save(id, updatedData);
   }
 
-  async getActiveUsers(id: number, skip: number, take: number) {
-    const where: any = { isActive: true };
-    if (id) {
-      where.id = id;
-    }
-
+  async getActiveUsers(skip: number, take: number) {
     const [users, total] = await usersRepository.findAndCount({
-      where,
+      where: { isActive: true },
       skip,
       take,
       order: { createdAt: 'DESC' }
@@ -60,7 +55,6 @@ class UsersService extends BaseService<User> {
 
     return {
       total,
-      pageSize: take,
       data: users
     };
   }
