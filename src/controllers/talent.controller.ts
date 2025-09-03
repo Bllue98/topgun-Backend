@@ -4,9 +4,10 @@ import { BaseController } from 'src/controllers/shared/base.controller';
 import type { Talent } from 'src/entities/Talent';
 import asyncHandler from 'src/middleware/async';
 import { TypedRequest } from 'src/types';
-import type { NextFunction, Response } from 'express';
+import type { Response, NextFunction } from 'express';
 import ErrorResponse from 'src/middleware/error';
 import httpStatus from 'http-status';
+
 import { EntityNotFoundError } from 'typeorm';
 
 class TalentController extends BaseController<Talent> {
@@ -41,8 +42,39 @@ class TalentController extends BaseController<Talent> {
       }
     );
   }
-}
 
-// get getRepository().findOne({ where: { id: 1 }, relations: ['effects', 'costs', 'requirements', 'tags'] });
+  get getRandom() {
+    return asyncHandler(async (req: TypedRequest<Record<string, unknown>>, res, next) => {
+      try {
+        const filters: { rarityId?: string; kind?: string } = {};
+
+        if (req.query['rarity']) {
+          filters.rarityId = String(req.query['rarity']);
+        }
+        if (req.query['kind']) {
+          filters.kind = String(req.query['kind']);
+        }
+
+        // Call service with filters
+        const talent = await this.service.getRandom(filters);
+
+        if (!talent) {
+          return res.status(404).json({
+            success: false,
+            message: 'No talent found matching the filters'
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          data: talent
+        });
+      } catch (err) {
+        console.error('getRandom error:', err);
+        next(new ErrorResponse('Failed to fetch random talent', httpStatus.INTERNAL_SERVER_ERROR));
+      }
+    });
+  }
+}
 
 export default new TalentController(talentsService);

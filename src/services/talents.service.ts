@@ -35,6 +35,38 @@ class TalentsService extends BaseService<Talent> {
       data: talents
     };
   }
+
+  async findMany(filters: Record<string, unknown>, relations: string[] = []) {
+    return this.repository.find({
+      where: filters,
+      relations
+    });
+  }
+
+  async getRandom(filters?: { rarityId?: string; kind?: string }): Promise<Talent | null> {
+    const qb = this.repository.createQueryBuilder('talent').select('talent.id');
+
+    if (filters?.kind) {
+      qb.innerJoin('talent.requirements', 'requirement', 'requirement.kind = :kind', { kind: filters.kind });
+    }
+
+    if (filters?.rarityId) {
+      qb.andWhere('talent.rarityId = :rarityId', { rarityId: filters.rarityId });
+    }
+
+    qb.orderBy('NEWID()'); // random order
+    qb.take(1);
+
+    // Get the single random ID
+    const result = await qb.getRawOne<{ talent_id: number }>();
+    if (!result) return null;
+
+    // Fetch full talent with relations
+    return this.repository.findOne({
+      where: { id: result.talent_id },
+      relations: ['requirements', 'rarity', 'costs', 'effects', 'tags']
+    });
+  }
 }
 
 export default new TalentsService(talentsRepository, 'id');

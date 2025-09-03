@@ -64,7 +64,9 @@ export class Talent {
   })
   effects?: Effect[];
 
-  @ManyToMany(() => Requirement, (requirement) => requirement.talents)
+  @ManyToMany(() => Requirement, (requirement) => requirement.talents, {
+    cascade: true
+  })
   @JoinTable({
     name: 'talent_requirements',
     joinColumns: [{ name: 'talent_id', referencedColumnName: 'id' }],
