@@ -1,24 +1,20 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Talent } from './Talent';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Talent } from "./Talent";
 
-@Index('PK__rarities__3213E83F07C6FF1E', ['id'], { unique: true })
-@Entity('rarities')
+@Index("PK__Rarity__3213E83F07E918BD", ["id"], { unique: true })
+@Entity({ name: 'rarities' })
 export class Rarity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id?: number;
 
-  @Column('varchar', { name: 'tier', length: 20, default: () => "'common'" })
+
+  @Column("nvarchar", { name: "tier", length: 20 })
   tier?: string;
 
-  @Column('decimal', {
-    name: 'weight',
-    precision: 10,
-    scale: 2,
-    default: () => '(1)'
-  })
+  @Column("float", { name: "weight", precision: 53, default: () => "(1)" })
   weight?: number;
 
-  @Column('char', { name: 'color', nullable: true, length: 7 })
+  @Column("nvarchar", { name: "color", nullable: true, length: 7 })
   color?: string | null;
 
   @OneToMany(() => Talent, (talent) => talent.rarity)

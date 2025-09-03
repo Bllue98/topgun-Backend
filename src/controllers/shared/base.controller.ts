@@ -112,5 +112,3 @@ export abstract class BaseController<Entity extends ObjectLiteral> {
     return advancedResults(entity);
   }
 }
-
-

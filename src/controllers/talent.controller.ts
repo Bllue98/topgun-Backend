@@ -1,14 +1,48 @@
-import { BaseController } from 'src/controllers/shared/base.controller';
-import { Talent } from 'src/entities/Talent';
+// src/controllers/talents.controller.ts
 import talentsService from 'src/services/talents.service';
+import { BaseController } from 'src/controllers/shared/base.controller';
+import type { Talent } from 'src/entities/Talent';
+import asyncHandler from 'src/middleware/async';
+import { TypedRequest } from 'src/types';
+import type { NextFunction, Response } from 'express';
+import ErrorResponse from 'src/middleware/error';
+import httpStatus from 'http-status';
+import { EntityNotFoundError } from 'typeorm';
 
-export class TalentsController extends BaseController<Talent> {
-  // Full graph endpoint
+class TalentController extends BaseController<Talent> {
+  override service: typeof talentsService;
 
   get getFull() {
-    const fullRelations = ['cost', 'effects', 'requirements', 'talentTags', 'rarity'];
-    return this.retrieve(fullRelations);
+    return asyncHandler(
+      async (req: TypedRequest<Record<string, unknown>>, res: Response, next: NextFunction): Promise<Response | void> => {
+        const id = parseInt(<string>req.params['id']);
+
+        if (!id) {
+          throw new EntityNotFoundError(this.service.repository.target, {
+            [this.service._pk]: id
+          });
+        }
+
+        try {
+          const talent = await this.service.retrieve(id, ['costs', 'effects', 'requirements', 'tags', 'rarity']);
+
+          if (!talent) {
+            throw new ErrorResponse('Talent not found', httpStatus.NOT_FOUND);
+          }
+
+          return res.status(httpStatus.OK).json({
+            success: true,
+            data: talent
+          });
+        } catch (err) {
+          console.error('getFull error:', err);
+          next(new ErrorResponse('Failed to fetch full talent', httpStatus.INTERNAL_SERVER_ERROR));
+        }
+      }
+    );
   }
 }
 
-export default new TalentsController(talentsService);
+// get getRepository().findOne({ where: { id: 1 }, relations: ['effects', 'costs', 'requirements', 'tags'] });
+
+export default new TalentController(talentsService);
