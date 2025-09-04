@@ -79,7 +79,12 @@ export const getMe = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     userData: {
-      ...user
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     }
   });
 });

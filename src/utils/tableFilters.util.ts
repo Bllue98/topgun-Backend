@@ -1,7 +1,31 @@
 import { type ObjectLiteral, type SelectQueryBuilder } from 'typeorm';
 
 export const filtersByTableName: Record<string, string[]> = {
-  Users: ['id', 'name', 'email']
+  users: ['id', 'name', 'email'],
+  costs: ['id', 'kind', 'resource', 'amount', 'maxUses'],
+  effects: ['id', 'kind', 'durationType', 'durationAmount', 'data'],
+  rarities: ['id', 'tier', 'weight', 'color'],
+  requirements: ['id', 'kind', 'minLevel', 'stat', 'minValue', 'talentRefId', 'tag', 'tagCount', 'classId', 'talents'],
+  tags: ['id', 'tag'],
+  talents: [
+    'id',
+    'name',
+    'description',
+    'createdAt',
+    'updatedAt',
+    'isKeyTalent',
+    'category',
+    'cooldown',
+    'rank',
+    'maxRank',
+    'rarityId',
+    // relations
+    'rarity',
+    'tags',
+    'costs',
+    'effects',
+    'requirements'
+  ]
 };
 
 export const searchTemplates = {

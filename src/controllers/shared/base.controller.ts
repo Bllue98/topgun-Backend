@@ -36,23 +36,19 @@ export abstract class BaseController<Entity extends ObjectLiteral> {
   }
 
   retrieve(relations: string[] | FindOptionsRelations<Entity> = []) {
-    return asyncHandler(
-      async (req: TypedRequest<Record<string, unknown>>, res: Response, _: NextFunction): Promise<Response | undefined> => {
-        const id = parseInt(<string>req.params['id']);
-        if (!id) {
-          throw new EntityNotFoundError(this.service.repository.target, {
-            [this.service._pk]: id
-          });
-        }
-
-        const data = await this.service.retrieve(id, relations);
-
-        return res.status(httpStatus.OK).json({
-          success: true,
-          data
-        });
+    return asyncHandler(async (req, res, _) => {
+      const id = req.params['id']; // <-- keep as string
+      if (!id) {
+        throw new EntityNotFoundError(this.service.repository.target, { [this.service._pk]: id });
       }
-    );
+
+      const data = await this.service.retrieve(id, relations); // service should accept string
+
+      return res.status(httpStatus.OK).json({
+        success: true,
+        data
+      });
+    });
   }
 
   get listPaginated() {
