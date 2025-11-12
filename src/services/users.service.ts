@@ -11,6 +11,12 @@ class UsersService extends BaseService<User> {
     return (await this.repository.findOne({ where: { email } })) ?? {};
   }
 
+  override async create(data: Partial<User>): Promise<User> {
+    // Create an actual entity instance so @BeforeInsert hooks will fire
+    const user = this.repository.create(data);
+    return await this.repository.save(user);
+  }
+
   override async retrieve(id: number, relations: string[] = [], select?: Array<keyof User>): Promise<User> {
     const user = await this.repository.findOne({
       where: { id },

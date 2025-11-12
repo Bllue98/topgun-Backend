@@ -58,6 +58,55 @@ export const handleLogin = asyncHandler(
   }
 );
 
+/**
+ * @desc      Register a new user
+ * @route     POST /api/v1/auth/register
+ * @access    Public
+ */
+export const handleRegister = asyncHandler(
+  async (req: TypedRequest<{ email: string; password: string; username: string }>, res: Response, next: NextFunction): Promise<Response | undefined> => {
+    const { email, password, username } = req.body;
+
+    if (!email || !password || !username) {
+      next(new ErrorResponse('Email, password, and username are required!', httpStatus.BAD_REQUEST));
+      return;
+    }
+
+    // Check if user already exists
+    const existingUser = await UsersService.getUsersByEmail(email);
+    if (existingUser && existingUser.id) {
+      next(new ErrorResponse('User with this email already exists', httpStatus.CONFLICT));
+      return;
+    }
+
+    // Create new user - password will be hashed by the @BeforeInsert hook
+    const newUser = await UsersService.create({
+      email,
+      password,
+      name: username,
+      isActive: true
+    });
+
+    if (!newUser || !newUser.id) {
+      next(new ErrorResponse('Failed to create user', httpStatus.INTERNAL_SERVER_ERROR));
+      return;
+    }
+
+    // Generate token for the new user
+    const token = createAccessToken(newUser.id, req);
+
+    res.status(httpStatus.CREATED).json({
+      success: true,
+      accessToken: token,
+      userData: {
+        name: newUser.name,
+        email: newUser.email,
+        id: newUser.id
+      }
+    });
+  }
+);
+
 // **
 //  * @desc      Get current logged in user
 //  * @route     GET /api/v1/auth/me

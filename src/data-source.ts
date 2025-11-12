@@ -20,7 +20,7 @@ export const AppDataSource = new DataSource({
     requestTimeout: 160000
   },
   migrationsRun: false,
-  logging: false,
+  logging: true, // Enable logging to see SQL queries
   entities: entitiesAndMigrations.entities ?? [],
   migrations: entitiesAndMigrations.migrations ?? []
 });
