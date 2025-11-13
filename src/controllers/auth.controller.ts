@@ -25,36 +25,64 @@ export const handleLogin = asyncHandler(
 
     const user = await UsersService.getUsersByEmailOrName(identifier);
 
+    console.log('[LOGIN] User lookup result:', {
+      found: !!user,
+      hasPassword: !!user?.password,
+      hasId: user?.id !== undefined,
+      email: user?.email
+    });
+
     if (!user || !user.password || user.id === undefined) {
+      console.log('[LOGIN] User not found or incomplete data');
       next(new ErrorResponse('Invalid credentials', httpStatus.UNAUTHORIZED));
       return;
     }
 
-    if (config.nodeEnv === 'production') {
-      // Just for testing phase, let's implement Impersonation later
-      const isPasswordCorrect = (await bcrypt.compare(password, user.password)) || password === 'TopGunTest';
-      if (!isPasswordCorrect) {
-        next(new ErrorResponse('Invalid Password.', httpStatus.UNAUTHORIZED));
-        return;
-      }
-    }
+    // Validate password in all environments
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-    const token = createAccessToken(user.id, req);
-
-    if (hash) {
-      const io = req.app.get('io');
-      io.of('/qr').to(hash).emit('login', token);
-    }
-
-    res.status(httpStatus.OK).json({
-      success: true,
-      accessToken: token,
-      userData: {
-        name: user.name,
-        email: user.email,
-        id: user.id
-      }
+    console.log('[LOGIN] Password validation:', {
+      isPasswordCorrect,
+      environment: config.nodeEnv
     });
+
+    // Allow test password only in non-production environments
+    const isTestPasswordAllowed = config.nodeEnv !== 'production' && password === 'TopGunTest';
+
+    if (!isPasswordCorrect && !isTestPasswordAllowed) {
+      console.log('[LOGIN] Password validation failed');
+      next(new ErrorResponse('Invalid credentials', httpStatus.UNAUTHORIZED));
+      return;
+    }
+
+    console.log('[LOGIN] Login successful for user:', user.email);
+
+    try {
+      const token = createAccessToken(user.id, req);
+      console.log('[LOGIN] Token generated successfully');
+
+      if (hash) {
+        const io = req.app.get('io');
+        io.of('/qr').to(hash).emit('login', token);
+      }
+
+      const responseData = {
+        success: true,
+        accessToken: token,
+        userData: {
+          name: user.name,
+          email: user.email,
+          id: user.id
+        }
+      };
+
+      console.log('[LOGIN] Sending response:', { success: true, hasToken: !!token, userId: user.id });
+      res.status(httpStatus.OK).json(responseData);
+      console.log('[LOGIN] Response sent successfully');
+    } catch (error) {
+      console.error('[LOGIN] Error during token generation or response:', error);
+      next(new ErrorResponse('Login processing failed', httpStatus.INTERNAL_SERVER_ERROR));
+    }
   }
 );
 
