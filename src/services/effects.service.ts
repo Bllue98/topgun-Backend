@@ -1,4 +1,4 @@
-import { Effect } from 'src/entities/Effect';
+import type { Effect } from 'src/entities/Effect';
 import effectsRepository from 'src/repositories/effects.repository';
 import { BaseService } from 'src/services/shared/base.service';
 

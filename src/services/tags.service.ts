@@ -1,4 +1,4 @@
-import { Tag } from 'src/entities/Tag';
+import type { Tag } from 'src/entities/Tag';
 import tagsRepository from 'src/repositories/tags.repository';
 import { BaseService } from 'src/services/shared/base.service';
 

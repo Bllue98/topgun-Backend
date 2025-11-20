@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Index, ManyToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Talent } from './Talent';
 
 @Index('PK__Cost__3213E83F0577CEB4', ['id'], { unique: true })

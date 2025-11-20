@@ -20,6 +20,9 @@ export class User {
   @Column({ name: 'is_active', type: 'bit', default: true })
   isActive: boolean;
 
+  @Column({ type: 'nvarchar', length: 50, default: () => 'client' })
+  role: string;
+
   @CreateDateColumn({
     type: 'datetime2',
     name: 'created_at',

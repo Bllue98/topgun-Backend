@@ -1,4 +1,4 @@
-import { Requirement } from 'src/entities/Requirement';
+import type { Requirement } from 'src/entities/Requirement';
 import requirementsRepository from 'src/repositories/requirements.repository';
 import { BaseService } from 'src/services/shared/base.service';
 
