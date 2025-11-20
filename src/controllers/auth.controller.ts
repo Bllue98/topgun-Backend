@@ -72,7 +72,8 @@ export const handleLogin = asyncHandler(
         userData: {
           name: user.name,
           email: user.email,
-          id: user.id
+          id: user.id,
+          role: user.role
         }
       };
 
@@ -129,7 +130,8 @@ export const handleRegister = asyncHandler(
       userData: {
         name: newUser.name,
         email: newUser.email,
-        id: newUser.id
+        id: newUser.id,
+        role: newUser.role
       }
     });
   }
@@ -161,7 +163,8 @@ export const getMe = asyncHandler(async (req, res) => {
       name: user.name,
       isActive: user.isActive,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      role: user.role
     }
   });
 });

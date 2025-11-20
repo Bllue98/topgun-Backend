@@ -3,8 +3,8 @@ import talentsService from 'src/services/talents.service';
 import { BaseController } from 'src/controllers/shared/base.controller';
 import type { Talent } from 'src/entities/Talent';
 import asyncHandler from 'src/middleware/async';
-import { TypedRequest } from 'src/types';
-import type { Response, NextFunction } from 'express';
+import type { TypedRequest } from 'src/types';
+import type { NextFunction, Response } from 'express';
 import ErrorResponse from 'src/middleware/error';
 import httpStatus from 'http-status';
 
@@ -15,7 +15,7 @@ class TalentController extends BaseController<Talent> {
 
   get getFull() {
     return asyncHandler(
-      async (req: TypedRequest<Record<string, unknown>>, res: Response, next: NextFunction): Promise<Response | void> => {
+      async (req: TypedRequest<Record<string, unknown>>, res: Response, next: NextFunction): Promise<void> => {
         const id = parseInt(<string>req.params['id']);
 
         if (!id) {
@@ -31,7 +31,7 @@ class TalentController extends BaseController<Talent> {
             throw new ErrorResponse('Talent not found', httpStatus.NOT_FOUND);
           }
 
-          return res.status(httpStatus.OK).json({
+          res.status(httpStatus.OK).json({
             success: true,
             data: talent
           });

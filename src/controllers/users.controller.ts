@@ -2,7 +2,7 @@ import usersService from 'src/services/users.service';
 import { BaseController } from 'src/controllers/shared/base.controller';
 import type { User } from 'src/entities/User';
 import asyncHandler from 'src/middleware/async';
-import { PaginationQuery, TypedRequest } from 'src/types';
+import type { PaginationQuery, TypedRequest } from 'src/types';
 import type { NextFunction, Response } from 'express';
 import ErrorResponse from 'src/middleware/error';
 import httpStatus from 'http-status';

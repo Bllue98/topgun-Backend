@@ -37,6 +37,7 @@ export abstract class BaseController<Entity extends ObjectLiteral> {
 
   retrieve(relations: string[] | FindOptionsRelations<Entity> = []) {
     return asyncHandler(async (req, res, _) => {
+      // eslint-disable-next-line @typescript-eslint/dot-notation
       const id = req.params['id']; // <-- keep as string
       if (!id) {
         throw new EntityNotFoundError(this.service.repository.target, { [this.service._pk]: id });
