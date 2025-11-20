@@ -30,6 +30,7 @@ class UsersService extends BaseService<User> {
 
     return user;
   }
+
   async getUsersByEmailOrName(identifier: string): Promise<Partial<User>> {
     return (
       (await this.repository.findOne({
@@ -41,7 +42,8 @@ class UsersService extends BaseService<User> {
           password: true,
           createdAt: true,
           updatedAt: true,
-          isActive: true
+          isActive: true,
+          role: true
         }
       })) ?? {}
     );

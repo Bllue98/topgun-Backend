@@ -11,7 +11,6 @@ export class CreateTalentSchema1756114539956 implements MigrationInterface {
         [weight] FLOAT NOT NULL CONSTRAINT [DF_rarities_weight] DEFAULT 1,
         [color] NVARCHAR(7) NULL,
         CONSTRAINT [PK_rarities_id] PRIMARY KEY ([id]),
-        CONSTRAINT [CK_rarities_tier] CHECK ([tier] IN (N'common', N'rare', N'legendary')),
         CONSTRAINT [CK_rarities_weight] CHECK ([weight] >= 0),
         CONSTRAINT [CK_rarities_color_hex] CHECK ([color] IS NULL OR [color] LIKE '#[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]')
       );

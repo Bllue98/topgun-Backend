@@ -1,7 +1,7 @@
 import { type ObjectLiteral, type SelectQueryBuilder } from 'typeorm';
 
 export const filtersByTableName: Record<string, string[]> = {
-  users: ['id', 'name', 'email'],
+  users: ['id', 'name', 'email', 'role'],
   costs: ['id', 'kind', 'resource', 'amount', 'maxUses'],
   effects: ['id', 'kind', 'durationType', 'durationAmount', 'data'],
   rarities: ['id', 'tier', 'weight', 'color'],

@@ -9,6 +9,7 @@ export interface User {
   id: number | undefined | null;
   name: string;
   email: string | undefined | null;
+  role?: string;
 }
 
 // Extend the Express Request type to include the user property
@@ -50,7 +51,8 @@ export const protect = () =>
       req.user = {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role
       };
 
       setCurrentUser(req.user);
